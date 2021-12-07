@@ -1,17 +1,21 @@
 const {seedUsers} = require('./user-seed');
 const {seedLectures} = require('./lectures-seed');
 
-async function seedDB(numberOfStudents = 200, numberOfTeachers = 20, lecturesPrTeacher = 100) {
+seedDB(50, 5, 100, () => {
+    process.exit(0);
+});
 
-    console.log("Here we go mate");
+async function seedDB(numberOfStudents = 200, numberOfTeachers = 20, lecturesPrTeacher = 100, callback) {
 
-    seedUsers(numberOfStudents, numberOfTeachers, (students, teachers) => {
+    console.log("Start seeding");
 
-        console.log(students.length);
-        console.log(teachers.length);
+    seedUsers(numberOfStudents, numberOfTeachers, async (students, teachers) => {
+        await seedLectures(lecturesPrTeacher, students, teachers);
 
-        seedLectures(lecturesPrTeacher, students, teachers);
+        console.log("Seeding Complete!");
+        callback();
     })
-} 
 
-seedDB(400, 40, 200);
+} 
+    
+
