@@ -61,9 +61,9 @@ function getJWTData(token, callback) {
     const splittetToken = token.split('.');
     
     const header = base64Decrypt(splittetToken[0]);
-    const body = base64Decrypt(splittetToken[1]);
+    const payload = base64Decrypt(splittetToken[1]);
 
-    callback(body, header);
+    callback(payload, header);
 }
 
 for (let i = 0; i < 100; i++) {
