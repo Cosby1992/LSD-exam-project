@@ -1,15 +1,15 @@
 const config = require("../config");
-
 const { MongoClient } = require("mongodb");
 
 // Connection URL
-const url = "mongodb://" + config.db.host + ":" + config.db.port;
+const url = "mongodb://" + config.mongodb.host + ":" + config.mongodb.port;
 const client = new MongoClient(url);
-const dbName = config.db.name;
+const dbName = config.mongodb.userdbname;
 
 // insert a user object in the database
-exports.createInUsers = async function (user) {
-  if (!user) throw new Error("User must be an object!");
+exports.createUser = async function (user) {
+  if (typeof user !== "object" || user === null || Array.isArray(user))
+    throw new Error("User must be an object!");
 
   await client.connect();
   const db = client.db(dbName);
@@ -31,3 +31,15 @@ exports.checkForDuplicateEmail = async function (email) {
 
   return dbResult;
 };
+
+exports.getUserByEmail = async function (email) {
+  await client.connect();
+  const db = client.db(dbName);
+  const collection = db.collection("users");
+
+  const dbResult = await collection.findOne({
+    email: email,
+  });
+
+  return dbResult;
+}

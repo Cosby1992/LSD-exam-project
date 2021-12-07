@@ -6,11 +6,33 @@ const validateEmail = function (email) {
       );
 };
 
+const validatePassword = function (password) {
+  return password?.length > 0 && typeof password === 'string';
+}
+
+const validateFirstname = function (firstname) {
+  return firstname?.length > 0 && typeof firstname === 'string';
+}
+
+const validateLastname = function (lastname) {
+  return lastname?.length > 0 && typeof lastname === 'string';
+}
+
+const validateDateOfBirth = function (dateOfBirth) {
+  const date_of_birth = new Date(dateOfBirth);
+  return !isNaN(date_of_birth.getTime());
+}
+
 const validateUserData = function (reqBody, cb) {
-  var dataOk = true;
   const {email, pwd, firstname, lastname, dob} = reqBody;
   var dateOfBirth;
 
+  var dataOk = validateEmail(email) && 
+                validatePassword(pwd) &&
+                validateFirstname(firstname) &&
+                validateLastname(lastname) && 
+                validateDateOfBirth(dob);
+  
   if(!validateEmail(email)) dataOk = false;
   if(pwd?.length <= 0) dataOk = false;
   if(firstname?.length <= 0) dataOk = false;
@@ -23,4 +45,8 @@ const validateUserData = function (reqBody, cb) {
   return dataOk;
 }
 
-module.exports = validateUserData;
+module.exports = {
+  validateUserData: validateUserData,
+  validateEmail: validateEmail,
+  validatePassword: validatePassword
+};

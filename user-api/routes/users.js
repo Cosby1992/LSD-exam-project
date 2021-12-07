@@ -1,11 +1,11 @@
 var express = require("express");
 var router = express.Router();
 const validateUserData = require("../scripts/user-data-validation");
-const {hashPassword, passwordMatch} = require("../scripts/password-manager");
+const {hashPassword} = require("../scripts/password-manager");
 const {
   checkForDuplicateEmail,
-  createInUsers,
-} = require("../scripts/mongo-helper");
+  createUser,
+} = require("../database/user-mongo_db");
 
 /* GET users index. UNUSED FOR NOW */
 router.get("/", async function (req, res, next) {
@@ -43,7 +43,7 @@ router.post("/teacher/create", async function (req, res, next) {
 
   // Try to save user to database
   try {
-    const insertedUser = await createInUsers({
+    const insertedUser = await createUser({
       email: req.body.email,
       pwd: await hashPassword(req.body.pwd),
       firstname: req.body.firstname,
