@@ -1,28 +1,21 @@
 const { createHmac } = require("crypto");
 const { jwt } = require("../config");
 
-const payload = {
-    iat: 78123964648,
-    user_id: "001",
-    role: "STUDENT"
-}
+const hashingAlgoritm = "HS256";
 
 function generateJWTToken(payload) {
 
     const header = {
-        alg: "HS256",
+        alg: hashingAlgoritm,
         typ: "JWT"
     };
 
     let base64Header = base64Encrypt(header);
     let base64Payload = base64Encrypt(payload);
-    let signature = hmac256Hash(base64Header + '.' + base64Payload);
+    let signature = createSignature(base64Header + '.' + base64Payload);
 
     return base64Header + '.' + base64Payload + '.' + signature;
 }
-
-let token = generateJWTToken(payload);
-console.log(token);
 
 function base64Encrypt(data) {
   if (data instanceof Object) {
@@ -41,6 +34,67 @@ function base64Decrypt(data) {
   throw new Error("Could not decrypt since data is not a String!");
 }
 
-function hmac256Hash(string) {
-  return createHmac("sha256", jwt.secret).update(string).digest("hex");
+function createSignature(string) {
+  return createHmac('sha256', jwt.secret).update(string).digest("hex");
 }
+
+function verifySignature(token) {
+
+    if(typeof token !== 'string') throw new Error('JWT is not a string!');
+
+    // split in header, payload and signature
+    const tokenSplitted = token.split('.');
+
+    if(tokenSplitted?.length !== 3) throw new Error("JWT is invalid format: \n" + token);
+
+    const expected = createSignature(tokenSplitted[0] + '.' + tokenSplitted[1]);
+    const actual = tokenSplitted[2];
+
+    //compare the signatures
+    return expected === actual;
+}
+
+function getJWTData(token, callback) {
+    
+    if(!verifySignature(token)) throw new Error('Failed to verify the token');
+
+    const splittetToken = token.split('.');
+    
+    const header = base64Decrypt(splittetToken[0]);
+    const body = base64Decrypt(splittetToken[1]);
+
+    callback(body, header);
+}
+
+for (let i = 0; i < 100; i++) {
+    const payload = {
+        iat: 7812396464 + i,
+        user_id: "0000" + String(i),
+        role: i % 2 == 0 ? "STUDENT" : "TEACHER"
+    }
+
+    const token = generateJWTToken(payload);
+    const fakeToken = token + '1';
+    
+    try {
+        getJWTData(token, (body, header) => {
+
+            console.log("---- " + i + " ----");
+            console.log(body.iat);
+            console.log(body.user_id);
+            console.log(body.role);
+            console.log("\n");
+            console.log(header.alg);
+            console.log(header.typ);
+            console.log("\n");
+    
+        })
+    } catch(err) {
+        console.log(i + err.message);
+    }
+    
+}
+
+
+
+
