@@ -66,34 +66,44 @@ function getJWTData(token, callback) {
     callback(payload, header);
 }
 
-for (let i = 0; i < 100; i++) {
-    const payload = {
-        iat: 7812396464 + i,
-        user_id: "0000" + String(i),
-        role: i % 2 == 0 ? "STUDENT" : "TEACHER"
-    }
+module.exports = {
+    generateJWTToken: generateJWTToken,
+    base64Encrypt: base64Encrypt,
+    base64Decrypt: base64Decrypt,
+    createSignature: createSignature,
+    verifySignature: verifySignature,
+    getJWTData: getJWTData
+};
 
-    const token = generateJWTToken(payload);
-    const fakeToken = token + '1';
-    
-    try {
-        getJWTData(token, (body, header) => {
 
-            console.log("---- " + i + " ----");
-            console.log(body.iat);
-            console.log(body.user_id);
-            console.log(body.role);
-            console.log("\n");
-            console.log(header.alg);
-            console.log(header.typ);
-            console.log("\n");
+// for (let i = 0; i < 100; i++) {
+//     const payload = {
+//         iat: 7812396464 + i,
+//         user_id: "0000" + String(i),
+//         role: i % 2 == 0 ? "STUDENT" : "TEACHER"
+//     }
+
+//     const token = generateJWTToken(payload);
+//     const fakeToken = token + '1';
     
-        })
-    } catch(err) {
-        console.log(i + err.message);
-    }
+//     try {
+//         getJWTData(token, (body, header) => {
+
+//             console.log("---- " + i + " ----");
+//             console.log(body.iat);
+//             console.log(body.user_id);
+//             console.log(body.role);
+//             console.log("\n");
+//             console.log(header.alg);
+//             console.log(header.typ);
+//             console.log("\n");
     
-}
+//         })
+//     } catch(err) {
+//         console.log(i + err.message);
+//     }
+    
+// }
 
 
 
