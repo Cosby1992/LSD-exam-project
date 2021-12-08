@@ -1,11 +1,4 @@
-
-
-const codeCharacters = [
-    'a','b','c','d','f','g','h','i','j','k',
-    'l','m','n','o','p','q','r','s','t','u',
-    'v','w','x','y','z','0','1','2','3','4',
-    '5','6','7','8','9' 
-];
+const characters = require('../config').codegeneration.characters;
 
 exports.generateCode = function(length = 4) {
 
@@ -13,12 +6,17 @@ exports.generateCode = function(length = 4) {
 
     // console.log(uppercase);
 
-    // for (let i = 0; i < length; i++) {
-        
-        
-    // }
+    var code = "";
 
-    return '....';
+    for (let i = 0; i < length; i++) {
+        // generate random number between 0 and characters array length
+        const charIndex = Math.floor(Math.random() * characters.length); 
+        // concat the corresponding character
+        code += characters[charIndex];
+        
+    }
+
+    return code;
 
 
 }
