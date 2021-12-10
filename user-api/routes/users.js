@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-const validateUserData = require("../scripts/user-data-validation");
+const {validateUserData} = require("../scripts/user-data-validation");
 const {hashPassword} = require("../scripts/password-manager");
 const {
   checkForDuplicateEmail,
@@ -18,6 +18,7 @@ router.get("/", async function (req, res, next) {
  * Create a new Teacher
  */
 router.post("/teacher/create", async function (req, res, next) {
+
   // Check if all data is there, and follows business rules
   let dataOk = validateUserData(req.body, (dateOfBirth) => {
     req.body.dob = dateOfBirth;
@@ -49,7 +50,7 @@ router.post("/teacher/create", async function (req, res, next) {
       firstname: req.body.firstname,
       lastname: req.body.lastname,
       date_of_birth: req.body.dob,
-      user_role: "TEACHER",
+      role: "TEACHER",
     });
 
     // If success, return 200 and inserted id
@@ -98,13 +99,13 @@ router.post("/student/create", async function (req, res, next) {
 
   // Try to save user to database
   try {
-    const insertedUser = await createInUsers({
+    const insertedUser = await createUser({
       email: req.body.email,
       pwd: await hashPassword(req.body.pwd),
       firstname: req.body.firstname,
       lastname: req.body.lastname,
       date_of_birth: req.body.dob,
-      user_role: "STUDENT",
+      role: "STUDENT",
     });
 
     // If success, return 200 and inserted id

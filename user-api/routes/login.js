@@ -6,7 +6,7 @@ const { getUserByEmail } = require("../database/user-mongo_db");
 const { createToken } = require('../scripts/jwt');
 
 /* GET home page. */
-router.get("/", async function (req, res, next) {
+router.post("/", async function (req, res, next) {
   const { email, pwd } = req.body;
 
   if (!validateEmail(email) || !validatePassword(pwd)) {
@@ -14,6 +14,7 @@ router.get("/", async function (req, res, next) {
       status: "400 - Bad Request",
       message: "One or more values was missing or lacking correct format",
     });
+    return;
   }
 
   user = await getUserByEmail(email);
@@ -23,6 +24,7 @@ router.get("/", async function (req, res, next) {
         status: "400 - Bad Request",
         message: "Wrong username or password",
       });
+      return;
   }
 
   if(!(await matchPassword(pwd, user.pwd))) {
@@ -30,12 +32,19 @@ router.get("/", async function (req, res, next) {
         status: "400 - Bad Request",
         message: "Wrong username or password",
       });
+      return;
   }
 
-  res.set('Authorization', 'JWT: ' + createToken(user)).send({
+  const tokenData = {
+    user_id: user._id, 
+    role: user.role
+  }
+
+  res.set('Authorization', 'JWT: ' + createToken(tokenData)).send({
       status: "200 - OK",
       message: "login successful"
   })
+  return;
 });
 
 module.exports = router;

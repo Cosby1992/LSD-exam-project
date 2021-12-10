@@ -27,18 +27,11 @@ const validateUserData = function (reqBody, cb) {
   const {email, pwd, firstname, lastname, dob} = reqBody;
   var dateOfBirth;
 
-  var dataOk = validateEmail(email) && 
+  const dataOk = validateEmail(email) && 
                 validatePassword(pwd) &&
                 validateFirstname(firstname) &&
                 validateLastname(lastname) && 
                 validateDateOfBirth(dob);
-  
-  if(!validateEmail(email)) dataOk = false;
-  if(pwd?.length <= 0) dataOk = false;
-  if(firstname?.length <= 0) dataOk = false;
-  if(lastname?.length <= 0) dataOk = false;
-  dateOfBirth = new Date(dob);
-  if(isNaN(dateOfBirth.getTime())) dataOk = false;
 
   if(dataOk && cb) cb(dateOfBirth);
 

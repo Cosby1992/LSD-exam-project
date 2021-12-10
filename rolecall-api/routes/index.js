@@ -5,7 +5,7 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
   res.send({
     status: "OK",
-    message: "Hello from Users API"
+    message: "Hello from Rolecall API"
   })
 });
 

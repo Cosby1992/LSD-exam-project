@@ -33,13 +33,19 @@ exports.checkForDuplicateEmail = async function (email) {
 };
 
 exports.getUserByEmail = async function (email) {
-  await client.connect();
-  const db = client.db(dbName);
-  const collection = db.collection("users");
+  try {
+    await client.connect();
+    const db = client.db(dbName);
+    const collection = db.collection("users");
 
-  const dbResult = await collection.findOne({
-    email: email,
-  });
+    const dbResult = await collection.findOne({
+      email: email,
+    });
 
-  return dbResult;
-}
+    return dbResult
+    
+  } catch(err) {
+    console.log(err);
+    return undefined;
+  }
+};

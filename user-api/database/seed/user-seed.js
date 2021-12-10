@@ -16,9 +16,11 @@ module.exports.seedUsers = async function seedUsers(
 ) {
   console.log("Seeding " + students + " students");
   const insertedStudents = await newUserLoop(students, "STUDENT");
+  insertedStudents.push(await newTestUser());
 
   console.log("Seeding " + teachers + " teachers");
   const insertedTeachers = await newUserLoop(teachers, "TEACHER");
+  insertedTeachers.push(await newTestUser('TEACHER'));
 
   console.log("Users seed complete!");
   
@@ -48,7 +50,7 @@ async function newUserLoop(amount, type = "STUDENT") {
       firstname: student.firstname,
       lastname: student.lastname,
       date_of_birth: student.dob,
-      user_role: type,
+      role: type,
     }).then((user) => {
       insertedArray.push(user.insertedId.toString());
     });
@@ -56,3 +58,35 @@ async function newUserLoop(amount, type = "STUDENT") {
 
   return insertedArray;
 }
+
+async function newTestUser(type = "STUDENT") {
+  var inserted;
+
+    const dobArr = faker.date
+      .between("1980-01-01", "2017-01-01")
+      .toLocaleDateString()
+      .split(".");
+
+    const student = {
+      email: type === 'STUDENT' ? "student@student.dk" : "teacher@teacher.dk",
+      pwd: type === 'STUDENT' ? "student" : "teacher",
+      firstname: faker.name.firstName(),
+      lastname: faker.name.lastName(),
+      dob: dobArr[2] + "-" + dobArr[1] + "-" + dobArr[0],
+    };
+
+    await createUser({
+      email: student.email,
+      pwd: await hashPassword(student.pwd),
+      firstname: student.firstname,
+      lastname: student.lastname,
+      date_of_birth: student.dob,
+      role: type,
+    }).then((user) => {
+      inserted = user.insertedId.toString();
+    });
+
+  return inserted;
+}
+
+
