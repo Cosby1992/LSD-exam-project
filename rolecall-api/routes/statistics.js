@@ -61,6 +61,9 @@ router.get('/overall', async function(req, res, next) {
             })
             return;
         } else if (payload.role === 'STUDENT') {
+
+            //TODO: implement overall statistics for student (with and without period as with the teacher above)
+
             sendResponse(res,501,"Not implemented","This functionality has not been implemented for students yet.");
             return;
         }
@@ -70,6 +73,14 @@ router.get('/overall', async function(req, res, next) {
     })
   
 });
+
+//TODO: Endpoint for statistics for single student
+
+//TODO: Endpoint for statistics for a single lecture_name (eg. "Databases for developers")
+
+//TODO: Endpoint for statistics for a student in a lecture_name
+
+//TODO: Endpoint for statistics for a student with teacher_id (teacher_docref)
 
 const sendResponse = (res, status, statusDescribtion, message) => {
   res.status(status).send({
