@@ -44,8 +44,6 @@ exports.calculateStudentAttendance = function (lectures, student_id) {
         lectures: lecturesStatistics
     };
 
-    console.log(attendanceObject);
-
    return attendanceObject;
 
 }
