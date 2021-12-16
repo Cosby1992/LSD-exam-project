@@ -108,68 +108,17 @@ exports.findLectureWithTeacherAndStudent = async function (teacher_id, student_i
         throw new Error('Invalid input, teacher_id and student_id must be strings');
     }
 
-    await client.connect();
-    const db = client.db(dbName);
-    const collection = db.collection("lectures");
-
-    let result = collection.find({teacher_docref: teacher_id, students_enroled: student_id});
-
-    if(!await result.hasNext()) {
-        throw new Error('No lectures contains both the teacher and student id provided');
-    }
-
-    let lectures = [];
-    while(await result.hasNext()) {
-        lectures.push(await result.next())
-    }
-
-    return lectures;
-
-}
-
-exports.findLectureWithTeacherAndLectureName = async function (teacher_id, lecture_name) {
-    if(!typeof teacher_id === 'string' || !typeof lecture_name === 'string') {
-        throw new Error('Invalid input, teacher_id and student_id must be strings');
-    }
-
-    await client.connect();
-    const db = client.db(dbName);
-    const collection = db.collection("lectures");
-
-    let result = collection.find({teacher_docref: teacher_id, name: lecture_name});
-
-    if(!await result.hasNext()) {
-        throw new Error('No lectures contains both the teacher and student id provided');
-    }
-
-    let lectures = [];
-    while(await result.hasNext()) {
-        lectures.push(await result.next())
-    }
-
-    return lectures;
+    return await find('lectures', {teacher_docref: teacher_id, students_enroled: student_id});
 
 }
 
 exports.findLecturesWhereStudentHasAttended = async function(teacher_id, student_id) {
 
-    let lectures = [];
-
-    try {
-        lectures = await exports.findLectureWithTeacherAndStudent(teacher_id, student_id);
-    } catch (error) {
-        throw new Error(error.message);
+    if(!typeof teacher_id === 'string' || !typeof student_id === 'string') {
+        throw new Error('Invalid input, teacher_id and student_id must be strings');
     }
 
-    let lecturesTheStudentHasAttended = [];
-
-    lectures.forEach(lecture => {
-        if(lecture?.students_checked_in?.includes(student_id)) {
-            lecturesTheStudentHasAttended.push(lecture);
-        }
-    })
-
-    return lecturesTheStudentHasAttended;
+    return await find('lectures', {teacher_docref: teacher_id, students_checked_in: student_id});
 
 }
 
@@ -179,22 +128,7 @@ exports.findLecturesWithTeacherAndStudentInInterval = async function(teacher_id,
         throw new Error('Invalid input, teacher_id and student_id must be strings, start and end must be date objects');
     }
 
-    await client.connect();
-    const db = client.db(dbName);
-    const collection = db.collection("lectures");
-
-    let result = collection.find({teacher_docref: teacher_id, students_enroled: student_id, start: {$gte: start}, end: {$lte: end}});
-
-    if(!await result.hasNext()) {
-        throw new Error('No lectures contains both the teacher and student id provided within the given period');
-    }
-
-    let lectures = [];
-    while(await result.hasNext()) {
-        lectures.push(await result.next())
-    }
-
-    return lectures;
+    return await find('lectures', {teacher_docref: teacher_id, students_enroled: student_id, start: {$gte: start}, end: {$lte: end}});
 
 }
 
@@ -204,22 +138,7 @@ exports.findLecturesWithTeacher = async function(teacher_id) {
         throw new Error('Invalid input, teacher_id must be a string');
     }
 
-    await client.connect();
-    const db = client.db(dbName);
-    const collection = db.collection("lectures");
-
-    let result = collection.find({teacher_docref: teacher_id});
-
-    if(!await result.hasNext()) {
-        throw new Error('No lectures contains the teacher_id provided');
-    }
-
-    let lectures = [];
-    while(await result.hasNext()) {
-        lectures.push(await result.next())
-    }
-
-    return lectures;
+    return await find('lectures', {teacher_docref: teacher_id});
 
 }
 
@@ -229,14 +148,83 @@ exports.findLecturesWithTeacherInInterval = async function(teacher_id, start, en
         throw new Error('Invalid input, teacher_id must be a string, start and end must be date objects');
     }
 
+    return await find('lectures', {teacher_docref: teacher_id, start: {$gte: start}, end: {$lte: end}});
+}
+
+exports.findLecturesWhereStudentIsEnroled = async function (student_id) {
+    if(!typeof student_id === 'string') {
+        throw new Error('Invalid input, student_id must be a string');
+    }
+
+    return await find('lectures', {students_enroled: student_id});
+}
+
+exports.findLecturesWhereStudentIsEnroledInInterval = async function (student_id, start, end) {
+    if(!typeof student_id === 'string' || isNaN(start?.getTime()) || isNaN(end?.getTime())) {
+        throw new Error('Invalid input, student_id must be a string, start and end must be date objects');
+    }
+
+    return await find('lectures', {students_enroled: student_id, start: {$gte: start}, end: {$lte: end}});
+}
+
+exports.findLectureWithTeacherAndLectureName = async function (teacher_id, lecture_name) {
+    if(!typeof teacher_id === 'string' || !typeof lecture_name === 'string') {
+        throw new Error('Invalid input, teacher_id and student_id must be strings');
+    }
+
+    return await find('lectures', {teacher_docref: teacher_id, name: lecture_name});
+
+}
+
+exports.findLectureWithTeacherAndLectureNameInInterval = async function (teacher_id, lecture_name, start, end) {
+    if(!typeof teacher_id === 'string' || !typeof student_id === 'string' || isNaN(start?.getTime()) || isNaN(end?.getTime())) {
+        throw new Error('Invalid input, teacher_id and student_id must be strings, start and end must be date objects');
+    }
+
+    return await find('lectures', {teacher_docref: teacher_id, name: lecture_name, start: {$gte: start}, end: {$lte: end}});
+}
+
+exports.findLectureWithTeacherAndStudentAndLectureName = async function (teacher_id, student_id, lecture_name) {
+    if(!typeof teacher_id === 'string' || !typeof student_id === 'string' || !typeof lecture_name === 'string' || isNaN(start?.getTime()) || isNaN(end?.getTime())) {
+        throw new Error('Invalid input, teacher_id, student_id and lecture name must be strings, start and end must be date objects');
+    }
+
+    return await find('lectures', {teacher_docref: teacher_id, students_enroled: student_id, name: lecture_name});
+}
+
+exports.findLectureWithTeacherAndStudentAndLectureNameInInterval = async function (teacher_id, student_id, lecture_name, start, end) {
+    if(!typeof teacher_id === 'string' || !typeof student_id === 'string' || !typeof lecture_name === 'string' || isNaN(start?.getTime()) || isNaN(end?.getTime())) {
+        throw new Error('Invalid input, teacher_id, student_id and lecture name must be strings, start and end must be date objects');
+    }
+
+    return await find('lectures', {teacher_docref: teacher_id, students_enroled: student_id, name: lecture_name, start: {$gte: start}, end: {$lte: end}});
+}
+
+exports.findLectureWithStudentAndLectureName = async function (student_id, lecture_name) {
+    if(!typeof student_id === 'string' || !typeof lecture_name === 'string') {
+        throw new Error('Invalid input, teacher_id, student_id and lecture name must be strings, start and end must be date objects');
+    }
+
+    return await find('lectures', {students_enroled: student_id, name: lecture_name});
+}
+
+exports.findLectureWithStudentAndLectureNameInInterval = async function (student_id, lecture_name, start, end) {
+    if(!typeof student_id === 'string' || !typeof lecture_name === 'string' || isNaN(start?.getTime()) || isNaN(end?.getTime())) {
+        throw new Error('Invalid input, student_id and lecture name must be strings, start and end must be date objects');
+    }
+
+    return await find('lectures', {students_enroled: student_id, name: lecture_name, start: {$gte: start}, end: {$lte: end}});
+}
+
+async function find(collection_name, query) {
+
     await client.connect();
     const db = client.db(dbName);
-    const collection = db.collection("lectures");
-
-    let result = collection.find({teacher_docref: teacher_id, start: {$gte: start}, end: {$lte: end}});
-
+    const collection = db.collection(collection_name);
+    let result = collection.find(query);
+    
     if(!await result.hasNext()) {
-        throw new Error('No lectures contains the teacher_id provided within the given period');
+        throw new Error('Not found: Nothing found with the given arguments');
     }
 
     let lectures = [];
@@ -245,7 +233,6 @@ exports.findLecturesWithTeacherInInterval = async function(teacher_id, start, en
     }
 
     return lectures;
-
 }
 
 

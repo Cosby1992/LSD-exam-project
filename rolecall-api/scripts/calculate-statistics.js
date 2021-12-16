@@ -8,15 +8,27 @@ exports.calculateStudentAttendance = function (lectures, student_id) {
 
     let lecturesAttended = 0;
     let lecturesTheStudentIsEnroledIn = 0;
+    let lecturesStatistics = [];
 
 
     lectures.forEach(lecture => {
         if(lecture?.students_enroled?.includes(student_id)) {
             lecturesTheStudentIsEnroledIn++;
 
+            let currentLectureReturnObject = {
+                lecture_id: lecture._id,
+                lecture_name: lecture.name,
+                lectureStartTimestamp: lecture.start,
+                lectureEndTimestamp: lecture.end,
+                attended: false
+            };
+
             if(lecture?.students_checked_in?.includes(student_id)) {
-                lecturesAttended++
+                lecturesAttended++;
+                currentLectureReturnObject.attended = true; 
             }
+
+            lecturesStatistics.push(currentLectureReturnObject);
         }
     });
 
@@ -28,7 +40,8 @@ exports.calculateStudentAttendance = function (lectures, student_id) {
         student_id: student_id,
         lecturesAttended: lecturesAttended,
         lecturesTheStudentIsEnroledIn: lecturesTheStudentIsEnroledIn,
-        attendancePercentage: calculatePercentage(lecturesAttended, lecturesTheStudentIsEnroledIn)
+        attendancePercentage: calculatePercentage(lecturesAttended, lecturesTheStudentIsEnroledIn),
+        lectures: lecturesStatistics
     };
 
     console.log(attendanceObject);
@@ -46,6 +59,8 @@ exports.calculateLectureStatistics = function (lecture_array) {
     let maximumStudentAttendance = 0; 
     let studentAttendance = 0; 
     let lectureAttendancePercentages = [];
+    let firstLectureInPeriodTimestamp = Number.MAX_SAFE_INTEGER;
+    let lastLectureInPeriodTimestamp = Number.MIN_SAFE_INTEGER; 
 
     lecture_array.forEach(lecture => {
 
@@ -56,19 +71,34 @@ exports.calculateLectureStatistics = function (lecture_array) {
         studentAttendance += numberOfStudentsThatAttended;
 
         let attendancePercentageObject = {
-            id: lecture?._id ? lecture._id : "Not available",
+            lectureId: lecture?._id ? lecture._id : "Not available",
+            lectureName: lecture.name,
             studentsEnroled: numberOfStudentsInThisLecture,
             attendedStudents: numberOfStudentsThatAttended,
-            attendacePercentage: calculatePercentage(numberOfStudentsThatAttended, numberOfStudentsInThisLecture)
+            attendacePercentage: calculatePercentage(numberOfStudentsThatAttended, numberOfStudentsInThisLecture),
+            lectureStartTimestamp: lecture?.start ? lecture.start : "Not available",
+            lectureEndTimestamp: lecture?.end ? lecture.end : "Not available",
         };
+
+        if(attendancePercentageObject.lectureStartTimestamp < firstLectureInPeriodTimestamp) {
+            firstLectureInPeriodTimestamp = attendancePercentageObject.lectureStartTimestamp;
+        }
+
+        if(attendancePercentageObject.lectureEndTimestamp > lastLectureInPeriodTimestamp ) {
+            lastLectureInPeriodTimestamp = attendancePercentageObject.lectureEndTimestamp;
+        }
 
         lectureAttendancePercentages.push(attendancePercentageObject);
     })
 
     attendanceObject = {
         numberOfLectures: lecture_array.length,
+        period: {
+            start: firstLectureInPeriodTimestamp,
+            end: lastLectureInPeriodTimestamp
+        },
+        overallAttendancePercentage: calculatePercentage(studentAttendance, maximumStudentAttendance),
         lectureAttendancePercentages: lectureAttendancePercentages,
-        overallAttendancePercentage: calculatePercentage(studentAttendance, maximumStudentAttendance)
     }
 
     return attendanceObject;

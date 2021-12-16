@@ -151,6 +151,29 @@ exports.findLectureWithTeacherAndLectureName = async function (teacher_id, lectu
 
 }
 
+exports.findLectureWithTeacherAndLectureNameInInterval = async function (teacher_id, lecture_name, start, end) {
+    if(!typeof teacher_id === 'string' || !typeof student_id === 'string' || isNaN(start?.getTime()) || isNaN(end?.getTime())) {
+        throw new Error('Invalid input, teacher_id and student_id must be strings, start and end must be date objects');
+    }
+
+    await client.connect();
+    const db = client.db(dbName);
+    const collection = db.collection("lectures");
+
+    let result = collection.find({teacher_docref: teacher_id, name: lecture_name, start: {$gte: start}, end: {$lte: end}});
+
+    if(!await result.hasNext()) {
+        throw new Error('No lectures contains both the teacher and student id provided');
+    }
+
+    let lectures = [];
+    while(await result.hasNext()) {
+        lectures.push(await result.next())
+    }
+
+    return lectures;
+}
+
 exports.findLecturesWhereStudentHasAttended = async function(teacher_id, student_id) {
 
     let lectures = [];
