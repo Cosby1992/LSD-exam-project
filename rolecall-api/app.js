@@ -16,6 +16,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+// Adding router to the api
 app.use('/', indexRouter);
 app.use('/lecture', lectureRouter);
 app.use('/student', studentRouter);

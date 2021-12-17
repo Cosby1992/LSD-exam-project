@@ -1,24 +1,17 @@
-const config = require("../../config");
-const { MongoClient } = require("mongodb");
 const faker = require("faker");
 const { createUser } = require("../user-mongo_db");
 const { hashPassword } = require("../../scripts/password-manager");
-
-// Connection URL
-const url = "mongodb://" + config.mongodb.host + ":" + config.mongodb.port;
-const client = new MongoClient(url);
-const dbName = config.mongodb.userdbname;
 
 module.exports.seedUsers = async function seedUsers(
   students = 200,
   teachers = 20,
   callback
 ) {
-  console.log("Seeding " + students + " students");
+  console.log("Seeding " + (students + 1) + " students");
   const insertedStudents = await newUserLoop(students, "STUDENT");
   insertedStudents.push(await newTestUser());
 
-  console.log("Seeding " + teachers + " teachers");
+  console.log("Seeding " + (teachers + 1) + " teachers");
   const insertedTeachers = await newUserLoop(teachers, "TEACHER");
   insertedTeachers.push(await newTestUser('TEACHER'));
 

@@ -32,36 +32,30 @@ router.post("/start", async function (req, res, next) {
 
   try {
     getTokenData(token, async (payload, header) => {
-      console.log(header);
-      console.log(payload);
 
       if(payload.role !== 'TEACHER') {
         sendResponse(res, 403, "Forbidden", "You are not authorized to use this endpoint, only teachers can start lectures");
       }
-
-      //const lecture = await findLectureById(req.body.lecture_id);
       
       const generatedCode = generateCode();
 
       let updateResult;
 
-      // try {
-      //   updateResult = await applyCodeToLecture(req.body.lecture_id, generatedCode);
-      // } catch (error) {
-      //   console.log(error);
-      //   sendResponse(res, 404, "Not Found", `The lecture_id: ${req.body.lecture_id} does not exist`);
-      //   return;
-      // }
-
       try {
         if(req.body?.ttl && typeof req.body.ttl === 'number' && req.body.ttl > min_ttl && req.body.ttl < max_ttl) {
-          updateResult = await publishAttendanceCodeWithTTL(req.body.lecture_id, generatedCode, req.body.ttl);
+          updateResult = await publishAttendanceCodeWithTTL(req.body.lecture_id, payload.user_id, generatedCode, req.body.ttl);
         } else {
-          updateResult = await publishAttendanceCodeWithTTL(req.body.lecture_id, generatedCode)
+          updateResult = await publishAttendanceCodeWithTTL(req.body.lecture_id, payload.user_id, generatedCode)
         }
       } catch (error) {
-        console.log(error);
-        sendResponse(res, 404, "Not Found", `The lecture_id: ${req.body.lecture_id} does not exist`);
+        if(error.message?.includes('Invalid input')){
+          sendResponse(res, 400, "Bad request", `One or more arguments was invalid: ` + error.message);
+        } else if (error.message?.includes('Not found')) {
+          sendResponse(res, 404, "Not Found", `The lecture was not found or did already end`);
+        } else {
+          sendResponse(res, 500, "Internal Server Error", error.message);
+        }
+        
         return;
       }
 

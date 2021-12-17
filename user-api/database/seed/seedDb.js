@@ -1,11 +1,11 @@
 const {seedUsers} = require('./user-seed');
 const {seedLectures} = require('./lectures-seed');
 
-seedDB(50, 5, 100, () => {
+seedDB(199, 9, 500, () => {
     process.exit(0);
 });
 
-async function seedDB(numberOfStudents = 200, numberOfTeachers = 20, lecturesPrTeacher = 100, callback) {
+async function seedDB(numberOfStudents = 199, numberOfTeachers = 9, lecturesPrTeacher = 500, callback) {
 
     console.log("Start seeding");
 

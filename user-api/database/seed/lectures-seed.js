@@ -1,7 +1,3 @@
-const config = require("../../config");
-const { MongoClient } = require("mongodb");
-const faker = require("faker");
-
 const { insertLecture } = require('../lecture-mongo_db');
 
 module.exports.seedLectures = async function seedLectures(
@@ -22,26 +18,16 @@ module.exports.seedLectures = async function seedLectures(
     "Data Science",
     "Math and Algorithms",
     "Exploration and Presentation",
-    "Databases for Developers",
-    // "Finance",
-    // "Architechture",
-    // "Innovation",
-    // "Business Modelling",
-    // "Business Engineering",
-    // "Web-design",
-    // "Entrepreneurship",
-    // "Business Management",
-    // "Programming",
-    // "English",
-    // "Math",
-    // "Physics",
-    // "Chemistry",
-    // "Microbiology",
-    // "Electronic Engineering",
+    "Databases for Developers"
   ];
   
   for (let i = 0; i < insertedTeachers.length; i++) {
-    var startTime = new Date(2021, 01, 01, 8, 0, 0, 0);
+    var startTime = new Date();
+    startTime.setHours(8);
+    startTime.setMinutes(0);
+    startTime.setSeconds(0);
+    startTime.setMilliseconds(0);
+
     var lastStartTime = startTime;
 
     for (let j = 0; j < numberOfLecturesPrTeacher; j++) {

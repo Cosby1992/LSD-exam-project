@@ -1,5 +1,5 @@
 const config = require("../config");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 
 // Connection URL
 const url = "mongodb://" + config.mongodb.host + ":" + config.mongodb.port;
@@ -27,17 +27,20 @@ const createIndexes = async () => {
 createIndexes();
 
 // insert an attendance document
-exports.publishAttendanceCodeWithTTL = async function (lecture_id, code, ttl = 15) {
+exports.publishAttendanceCodeWithTTL = async function (lecture_id, teacher_id, code, ttl = 15) {
   if (
     typeof lecture_id !== "string" ||
     typeof code !== "string" ||
     typeof ttl !== "number"
   ) {
     throw new Error(
-      "lecture_id and code must be strings and ttl must be a number"
+      "Invalid input: lecture_id and code must be strings and ttl must be a number"
     );
   }
 
+  // Check if lecture exists with teacher id
+  await find('lectures', {_id: ObjectId(lecture_id), teacher_docref: teacher_id,  end: {$gte: new Date()}})
+  
   await client.connect();
   const db = client.db(dbName);
   const collection = db.collection("attendance");
@@ -45,15 +48,11 @@ exports.publishAttendanceCodeWithTTL = async function (lecture_id, code, ttl = 1
   const expire_date = new Date();
   expire_date.setSeconds(expire_date.getSeconds() + ttl);
 
-  const inserted = await collection.insertOne({
+  return await collection.insertOne({
     lecture_id: lecture_id,
     attendance_code: code,
     expires_at: expire_date,
   });
-
-  console.log(inserted);
-
-  return inserted;
 };
 
 exports.checkIfCodeMatches = async (code, lecture_id) => {
@@ -79,4 +78,23 @@ exports.checkIfCodeMatches = async (code, lecture_id) => {
 
   return false;
 };
+
+async function find(collection_name, query) {
+
+  await client.connect();
+  const db = client.db(dbName);
+  const collection = db.collection(collection_name);
+  let result = collection.find(query);
+  
+  if(!await result.hasNext()) {
+      throw new Error('Not found: Nothing found with the given arguments');
+  }
+
+  let lectures = [];
+  while(await result.hasNext()) {
+      lectures.push(await result.next())
+  }
+
+  return lectures;
+}
 
