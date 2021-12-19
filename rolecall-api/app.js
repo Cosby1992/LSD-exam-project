@@ -8,6 +8,7 @@ var indexRouter = require('./routes/index');
 var lectureRouter = require('./routes/lecture');
 var studentRouter = require('./routes/student');
 var statisticsRouter = require('./routes/statistics');
+var cors = require('cors');
 
 var app = express();
 
@@ -15,6 +16,14 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+app.use(cors({
+  origin : 'http://localhost:3000',
+  methods: 'GET, POST',
+  credentials: true,
+  allowedHeaders: 'Content-Type,Authorization',
+  exposedHeaders: 'Authorization',
+}))
 
 // Adding router to the api
 app.use('/', indexRouter);

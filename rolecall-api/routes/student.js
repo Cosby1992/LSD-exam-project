@@ -24,12 +24,9 @@ router.post("/checkin", async function (req, res, next) {
 
 
   const token = header?.split(" ")[1];
-  console.log("TOKEN " + token);
 
   try {
     getTokenData(token, async (payload, header) => {
-      console.log(header);
-      console.log(payload);
 
       if (payload.role !== 'STUDENT') {
         sendResponse(res, 403, "Forbidden", "You are not authorized to use this endpoint, only students can start lectures");
@@ -41,8 +38,7 @@ router.post("/checkin", async function (req, res, next) {
       try {
         codeMatches = await checkIfCodeMatches(attendance_code, lecture_id);
       } catch (error) {
-        console.log(error);
-        sendResponse(res, 404, `Not Found`, `The lecture with id: ${lecture_id} does not exist`);
+        sendResponse(res, 404, `Not Found`, `The lecture with id: ${lecture_id} is not open for attendance registration`);
         return;
       }
 
@@ -54,10 +50,8 @@ router.post("/checkin", async function (req, res, next) {
       let inserted;
       try {
         inserted = await registerStudentAttendance(payload.user_id, lecture_id);
-        console.log(inserted);
       } catch (error) {
-        console.log(error);
-        sendResponse(res, 500, "Not Found", "The lecture or user does not exist in the database");
+        sendResponse(res, 404, "Not Found", "The lecture or user does not exist in the database");
         return;
       }
 

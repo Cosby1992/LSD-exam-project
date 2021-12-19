@@ -69,8 +69,8 @@ exports.calculateLectureStatistics = function (lecture_array) {
         studentAttendance += numberOfStudentsThatAttended;
 
         let attendancePercentageObject = {
-            lectureId: lecture?._id ? lecture._id : "Not available",
-            lectureName: lecture.name,
+            lecture_id: lecture?._id ? lecture._id : "Not available",
+            lecture_name: lecture.name,
             studentsEnroled: numberOfStudentsInThisLecture,
             attendedStudents: numberOfStudentsThatAttended,
             attendacePercentage: calculatePercentage(numberOfStudentsThatAttended, numberOfStudentsInThisLecture),
@@ -96,7 +96,7 @@ exports.calculateLectureStatistics = function (lecture_array) {
             end: lastLectureInPeriodTimestamp
         },
         overallAttendancePercentage: calculatePercentage(studentAttendance, maximumStudentAttendance),
-        lectureAttendancePercentages: lectureAttendancePercentages,
+        lectures: lectureAttendancePercentages,
     }
 
     return attendanceObject;
@@ -110,21 +110,3 @@ function calculatePercentage(fraction, total) {
 
     return (fraction / total) * 100;
 }
-
-
-
-// async function gogo() {
-//     try {
-//         //let lectures = await findLectureWithTeacherAndStudent('61b1ebba583b9cffc447c61f', '61b1ebb8583b9cffc447c5ed');
-//         let single_sub_lectures = await findLectureWithTeacherAndLectureName('61b1ebba583b9cffc447c61f', 'Math');
-
-//         //exports.calculateStudentAttendance(lectures, '61b1ebb8583b9cffc447c5ed');
-//         let test = exports.calculateClassAttendanceForSubject(single_sub_lectures);
-//         console.log(test);
-//     } catch (err) {
-//         console.log(err);
-//         process.exit(0);
-//     }
-// }
-
-// gogo();

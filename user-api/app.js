@@ -3,12 +3,11 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cors = require('cors');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var loginRouter = require('./routes/login');
-var lectureRouter = require('./routes/lecture');
-var studentRouter = require('./routes/student');
 
 var app = express();
 
@@ -17,11 +16,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+app.use(cors({
+  origin : 'http://localhost:3000',
+  methods: 'GET, POST',
+  credentials: true,
+  allowedHeaders: 'Content-Type,Authorization',
+  exposedHeaders: 'Authorization',
+}))
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/login', loginRouter);
-app.use('/lecture', lectureRouter);
-app.use('/student', studentRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

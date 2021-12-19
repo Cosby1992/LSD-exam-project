@@ -39,7 +39,11 @@ exports.publishAttendanceCodeWithTTL = async function (lecture_id, teacher_id, c
   }
 
   // Check if lecture exists with teacher id
-  await find('lectures', {_id: ObjectId(lecture_id), teacher_docref: teacher_id,  end: {$gte: new Date()}})
+  await find('lectures', {_id: ObjectId(lecture_id), teacher_docref: teacher_id})
+
+  // THIS SHOULD BE USED TO CHECK THAT A LECTURE WILL ONLY START IF IT DID NOT ALREADY TAKE PLACE
+  // // Check if lecture exists with teacher id
+  // await find('lectures', {_id: ObjectId(lecture_id), teacher_docref: teacher_id,  end: {$gte: new Date()}})
   
   await client.connect();
   const db = client.db(dbName);

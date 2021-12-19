@@ -1,7 +1,7 @@
 const {seedUsers} = require('./user-seed');
 const {seedLectures} = require('./lectures-seed');
 
-seedDB(199, 9, 500, () => {
+seedDB(199, 9, 1000, () => {
     process.exit(0);
 });
 

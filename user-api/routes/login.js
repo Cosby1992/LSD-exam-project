@@ -9,6 +9,8 @@ const { createToken } = require('../scripts/jwt');
 router.post("/", async function (req, res, next) {
   const { email, pwd } = req.body;
 
+  console.log(req.body);
+
   if (!validateEmail(email) || !validatePassword(pwd)) {
     res.status(400).send({
       status: "400 - Bad Request",
@@ -42,7 +44,8 @@ router.post("/", async function (req, res, next) {
 
   res.set('Authorization', 'JWT: ' + createToken(tokenData)).send({
       status: "200 - OK",
-      message: "login successful"
+      message: "login successful",
+      user_role: user.role
   })
   return;
 });

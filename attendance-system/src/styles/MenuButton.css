@@ -1,0 +1,17 @@
+
+.menu-button {
+    height: 60px;
+    width: 300px;
+    font-size: 30;
+    text-transform: uppercase;
+    color: white;
+    background-color: rgba(12, 100, 0, 0.877);
+    border-radius: 5px;
+    border: 1px solid black;
+    outline: none;
+}
+
+.menu-button:hover {
+    background-color: rgba(8, 68, 0, 0.842);
+    border: 1px solid rgba(0, 0, 0, 0.712);
+}

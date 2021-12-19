@@ -1,0 +1,13 @@
+
+.inner-root {
+    height: 100vh;
+    width: 100vw;
+    background: url('../images/login-background.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

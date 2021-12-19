@@ -1,0 +1,36 @@
+
+.dropdown-container {
+    max-height: 250px;
+    overflow-y: auto;
+    background-color: rgba(0, 0, 0, 0.507);
+}
+
+.lecture-dropdown-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 250px;
+    padding: 10px;
+}
+
+.lecture-dropdown-item:hover {
+    background-color: rgba(0, 0, 0, 0.507);
+}
+
+.lecture-name-text {
+    font-size: 12px;
+    font-weight: 700;
+    margin: 0 5px 5px 5px;
+}
+
+.dropdown-time-text {
+    font-size: 10px;
+    font-weight: 700;
+    margin: 0 5px 5px 5px;
+}
+
+.arrow-down {
+    filter: invert(1);
+    height: 25px;
+}
