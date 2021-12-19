@@ -23,7 +23,7 @@ export default class StatisticsRadarChart extends Component {
       endDate: end.toISOString().substring(0, 10),
     };
 
-    this.createRadarChartData = this.createRadarChartData.bind(this);
+    this.createRadarChartDataTeacher = this.createRadarChartDataTeacher.bind(this);
   }
 
   async componentDidMount() {
@@ -71,7 +71,7 @@ export default class StatisticsRadarChart extends Component {
             outerRadius={150}
             width={800}
             height={400}
-            data={this.createRadarChartData(this.state.data)}
+            data={this.state.data?.lectures[0]?.attendacePercentage ? this.createRadarChartDataTeacher(this.state.data) : this.createRadarChartDataStudent(this.state.data)}
             fill="#FFFFFF"
           >
             <PolarGrid />
@@ -85,6 +85,18 @@ export default class StatisticsRadarChart extends Component {
               fillOpacity={0.6}
             />
           </RadarChart>
+
+          {this.state.data?.overallAttendancePercentage ?
+            <h2 style={{textAlign: 'center'}}>Overall <span style={{color: 'yellow'}}>{this.state.data.overallAttendancePercentage.toFixed(2)}%</span> student attendance in the period</h2>
+            :
+            null
+          }
+
+          {this.state.data?.attendancePercentage ?
+            <h2 style={{textAlign: 'center'}}>Overall <span style={{color: 'yellow'}}>{this.state.data.attendancePercentage.toFixed(2)}%</span> attendance in the period</h2>
+            :
+            null
+          }
 
           <div className="date-picker-radar-wrapper">
             <div>
@@ -130,7 +142,48 @@ export default class StatisticsRadarChart extends Component {
     });
   }
 
-  createRadarChartData() {
+  createRadarChartDataStudent() {
+
+    var dataArray = [];
+
+    var dataMap = new Map();
+    var amountMap = new Map();
+
+    for (let i = 0; i < this.state.data.lectures.length; i++) {
+      const lecture = this.state.data.lectures[i];
+
+      if (!dataMap.has(lecture.lecture_name)) {
+        if(lecture.attended) dataMap.set(lecture.lecture_name, 1);
+        dataMap.set(lecture.lecture_name, 0);
+        amountMap.set(lecture.lecture_name, 1);
+      } else {
+        if(lecture.attended) {
+          dataMap.set(
+            lecture.lecture_name,
+            dataMap.get(lecture.lecture_name) + 1
+          );
+        }
+        
+        amountMap.set(
+          lecture.lecture_name,
+          amountMap.get(lecture.lecture_name) + 1
+        );
+      }
+    }
+
+    dataMap.forEach((value, key) => {
+      dataArray.push({
+        subject: key,
+        A: value / amountMap.get(key) * 100,
+      });
+    });
+
+    return dataArray;
+
+  }
+
+  createRadarChartDataTeacher() {
+
     var dataArray = [];
 
     var dataMap = new Map();
@@ -161,8 +214,8 @@ export default class StatisticsRadarChart extends Component {
       });
     });
 
-    console.log(dataArray);
-
     return dataArray;
   }
+
+
 }

@@ -19,33 +19,8 @@ export default class TeacherView extends Component {
       intervalId: null,
       codeTTL: 300,
       statisticsPressed: false,
-      statisticsData: [
-        {
-          subject: "Math",
-          A: 350,
-        },
-        {
-          subject: "Chinese",
-          A: 98,
-        },
-        {
-          subject: "English",
-          A: 86,
-        },
-        {
-          subject: "Geography",
-          A: 99,
-        },
-        {
-          subject: "Physics",
-          A: 85,
-        },
-        {
-          subject: "History",
-          A: 65,
-        },
-      ],
-    };
+    }
+  
 
     this.selectStart = this.selectStart.bind(this);
     this.backToHome = this.backToHome.bind(this);
@@ -168,7 +143,8 @@ export default class TeacherView extends Component {
     if (this.state.statisticsPressed) {
         return <div className="teacher-outer-wrapper">
 
-            <StatisticsRadarChart data={this.state.statisticsData} authToken={this.props.authToken}></StatisticsRadarChart>
+            <h1>Teacher Statistics</h1>
+            <StatisticsRadarChart authToken={this.props.authToken}></StatisticsRadarChart>
 
           <MenuButton title="BACK" function={this.backToHome}></MenuButton>
         </div>

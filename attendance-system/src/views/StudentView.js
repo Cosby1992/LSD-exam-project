@@ -4,6 +4,7 @@ import '../styles/StudentView.css';
 import MenuButton from "../components/MenuButton";
 import InputField from "../components/InputField";
 import SelectLectureDropDown from "../components/SelectLectureDropDown";
+import StatisticsRadarChart from "../components/StatisticsRadarChart";
 
 export default class StudentView extends Component {
 
@@ -12,6 +13,7 @@ export default class StudentView extends Component {
 
         this.state = {
             registerPressed: false,
+            statisticsPressed: false,
             inputCode: "",
             selectedLecture: "",
             lectures: [],
@@ -23,6 +25,7 @@ export default class StudentView extends Component {
         this.backToHome = this.backToHome.bind(this);
         this.register = this.register.bind(this);
         this.setSelectedLecture = this.setSelectedLecture.bind(this);
+        this.selectStatistics = this.selectStatistics.bind(this);
     }
 
     async componentDidMount() {
@@ -73,12 +76,22 @@ export default class StudentView extends Component {
                 <MenuButton title="BACK" function={this.backToHome}></MenuButton>
             </div>
         }
+
+        if (this.state.statisticsPressed) {
+            return <div className="teacher-outer-wrapper">
+    
+                <h1>Student Statistics</h1>
+                <StatisticsRadarChart authToken={this.props.authToken}></StatisticsRadarChart>
+    
+              <MenuButton title="BACK" function={this.backToHome}></MenuButton>
+            </div>
+        }
                 
 
         return <div className="student-outer-wrapper">
             <h1>WELCOME STUDENT</h1>
             <MenuButton title="Register Attendance" function={this.selectRegister}></MenuButton>
-            <MenuButton title="See Statistics" function={() => { }}></MenuButton>
+            <MenuButton title="See Statistics" function={this.selectStatistics}></MenuButton>
             <MenuButton title="LOGOUT" function={this.props.logout}></MenuButton>
         </div>
     }
@@ -89,9 +102,16 @@ export default class StudentView extends Component {
         })
     }
 
+    selectStatistics() {
+        this.setState({
+          statisticsPressed: true,
+        });
+      }
+
     backToHome() {
         this.setState({
             registerPressed: false,
+            statisticsPressed: false,
         })
     }
 
